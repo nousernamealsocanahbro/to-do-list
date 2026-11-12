@@ -1,6 +1,23 @@
 from database import Database
 
 options = ['View tasks', 'Mark task as done', 'Add task', 'Modify task', 'Remove task', 'Exit']
+
+def _validate_int(message: str) -> bool:
+    try:
+        int(message)
+
+        return True
+    except ValueError as e:
+        print(e)
+
+        return False
+
+def get_int(message: str) -> int:
+    while True:
+        number = input(message)
+
+        if _validate_int(number):
+            return int(number)
         
 def main() -> None:
     db = Database()
@@ -10,23 +27,27 @@ def main() -> None:
             print(f"{i}. {option}")
         
         try:
-            choice = int(input("Enter choice: "))
+            choice = get_int("Enter choice: ")
             
             if choice == 1:
                 db.print_tasks()
                 input("Press enter to continue... ")
             elif choice == 2:
                 db.mark_task_as_done()
-                input("Task marked as done. ")
+                print("Task marked as done. ")
+                input("Press enter to continue... ")
             elif choice == 3:
                 db.add_task()
-                input("Task added. ")
+                print("Task added. ")
+                input("Press enter to continue... ")
             elif choice == 4:
                 db.modify_task()
-                input("Task modifed. ")
+                print("Task modifed. ")
+                input("Press enter to continue... ")
             elif choice == 5:
                 db.remove_task()
-                input("Task removed. ")
+                print("Task removed. ")
+                input("Press enter to continue... ")
             elif choice == 6:
                 print("Bye") # mysql says this when you exit it and i think its funny
                 break

@@ -1,9 +1,3 @@
-'''
-it is 12/11/26 at 0039
-add a mark as done function
-i want to sleep
-'''
-
 import os
 import mysql.connector
 from dotenv import load_dotenv
@@ -11,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Database:
-    def __init__(self):
+    def __init__(self) -> None:
         self.connection = self._connect_to_db()
         self.cursor = self.connection.cursor()
 
@@ -45,7 +39,7 @@ class Database:
             db_id = input(message)
 
             if self._validate_int(db_id):
-                return db_id
+                return int(db_id)
 
     def _write(self, command: str, values: tuple) -> None:
         self.cursor.execute(command, values)
@@ -56,13 +50,13 @@ class Database:
 
         return task
 
-    def print_tasks(self):
+    def print_tasks(self) -> None:
         tasks = self._get_tasks()
 
         for i, (id, task, done) in enumerate(tasks):
             print(f"{id}. {task} [{"Done" if done else "Not done"}]")
 
-    def mark_task_as_done(self):
+    def mark_task_as_done(self) -> None:
         db_id = self._get_id("Enter ID of task to mark as done: ")
 
         self._write("""
@@ -72,7 +66,7 @@ class Database:
         """, 
         (db_id,))
 
-    def add_task(self):
+    def add_task(self) -> None:
         task = self._get_task_details()
 
         self._write("""
@@ -81,7 +75,7 @@ class Database:
         """,
         (task,))
 
-    def modify_task(self):
+    def modify_task(self) -> None:
         db_id = self._get_id("Enter ID of task you wish to remove: ")
 
         task = self._get_task_details()
@@ -93,7 +87,7 @@ class Database:
         """,
         (task, db_id))
 
-    def remove_task(self):
+    def remove_task(self) -> None:
         db_id = self._get_id("Enter ID of task you wish to remove: ")
 
         self._write("""
