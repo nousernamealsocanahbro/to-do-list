@@ -1,62 +1,37 @@
-def view_tasks(file):
-    with open(file, 'r') as f:
-        for i, v in enumerate(f):
-            print(i+1, v, end="")
+from database import Database
 
-def add_task(file):
-    task = input("Input task: ")
-    
-    with open(file, 'a') as f:
-        f.write(f'{task}\n')
+options = ['View tasks', 'Mark task as done', 'Add task', 'Modify task', 'Remove task', 'Exit']
         
-        print(f"{task} has been added")
+def main() -> None:
+    db = Database()
 
-def remove_task(file):
-    with open(file, 'r') as f:
-        tasks = list(f)
-        
-        for i, v in enumerate(tasks, 1):
-            print(i, v, end="\n")
-        
-        try:
-            task_number = int(input("Input task to remove: "))
-            
-            if task_number < 1:
-                print("Task number must be a positive integer, please try again.")
-            else:
-                tasks.pop(task_number-1)
-            
-                with open(file, 'w') as ff:
-                    ff.writelines(tasks)
-        except ValueError as e:
-            print(e)
-        
-def main():
-    file_name = input("Input name for file without file extension: ") + '.txt'
-    file = open(file_name, 'a')
-    file.close()
-    
     while True:
-        print("1. View tasks")
-        print("2. Add task")
-        print("3. Remove task")
-        print("4. Exit")
+        for i, option in enumerate(options, 1):
+            print(f"{i}. {option}")
         
         try:
             choice = int(input("Enter choice: "))
             
-            if choice < 1 or choice > 4:
-                print("Choice must be 1-4, please try again.")
-            else:
-                if choice == 1:
-                    view_tasks(file_name)
-                elif choice == 2:
-                    add_task(file_name)
-                elif choice == 3:
-                    remove_task(file_name)
-                else:
-                    break
+            if choice == 1:
+                db.print_tasks()
+                input("Press enter to continue... ")
+            elif choice == 2:
+                db.mark_task_as_done()
+                input("Task marked as done. ")
+            elif choice == 3:
+                db.add_task()
+                input("Task added. ")
+            elif choice == 4:
+                db.modify_task()
+                input("Task modifed. ")
+            elif choice == 5:
+                db.remove_task()
+                input("Task removed. ")
+            elif choice == 6:
+                print("Bye") # mysql says this when you exit it and i think its funny
+                break
         except ValueError as e:
             print(e)
 
-main()
+if __name__ == "__main__":
+    main()
