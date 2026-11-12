@@ -1,7 +1,7 @@
 # To-do list
-A to-do list
+A to-do list using Python and SQL
 
 # Usage
-1. Input name of file. It will create a new file if it doesn't exist, and open it if it does.
-2. Pick between viewing tasks, or adding/removing a task.
-3. When you are done, type in 4 to exit.
+1. Make an .env file and put in the name and password of your user, database, and host
+2. Run the script
+3. You can freely add, modify, or remove tasks
