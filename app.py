@@ -34,20 +34,24 @@ def main() -> None:
                 input("Press enter to continue... ")
             elif choice == 2:
                 db.mark_task_as_done()
-                print("Task marked as done. ")
-                input("Press enter to continue... ")
+
+                db.print_tasks()
+                input("Task marked as done. Press enter to continue... ")
             elif choice == 3:
                 db.add_task()
-                print("Task added. ")
-                input("Press enter to continue... ")
+
+                db.print_tasks()
+                input("Task added. Press enter to continue... ")
             elif choice == 4:
                 db.modify_task()
-                print("Task modifed. ")
-                input("Press enter to continue... ")
+
+                db.print_tasks()
+                input("Task modifed. Press enter to continue... ")
             elif choice == 5:
                 db.remove_task()
-                print("Task removed. ")
-                input("Press enter to continue... ")
+
+                db.print_tasks()
+                input("Task removed. Press enter to continue... ")
             elif choice == 6:
                 print("Bye") # mysql says this when you exit it and i think its funny
                 break
