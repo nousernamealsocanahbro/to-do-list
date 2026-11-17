@@ -1,7 +1,6 @@
 # To-do list
-A to-do list
+A CLI Python to-do list using sqlite3
 
 # Usage
-1. Input name of file. It will create a new file if it doesn't exist, and open it if it does.
-2. Pick between viewing tasks, or adding/removing a task.
-3. When you are done, type in 4 to exit.
+1. Make an .env file in the same directory as the programs and put in the name of your database as DB_NAME, ex. 'DB_NAME = "DATABASE_NAME"' (without the 's)
+2. Run the program
