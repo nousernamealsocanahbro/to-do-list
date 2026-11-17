@@ -22,39 +22,35 @@ def get_int(message: str) -> int:
 def main() -> None:
     db = Database()
 
+    db.create_table()
+
     while True:
         for i, option in enumerate(options, 1):
             print(f"{i}. {option}")
         
         try:
             choice = get_int("Enter choice: ")
-            
-            if choice == 1:
-                db.print_tasks()
-                input("Press enter to continue... ")
-            elif choice == 2:
-                db.mark_task_as_done()
 
-                db.print_tasks()
-                input("Task marked as done. Press enter to continue... ")
-            elif choice == 3:
-                db.add_task()
+            match choice:
+                case 1:
+                    db.print_tasks()
+                case 2:
+                    db.mark_task_as_done()
+                    print("Task marked as done.")
+                case 3:
+                    db.add_task()
+                    print("Task added.")
+                case 4:
+                    db.modify_task()
+                    print("Task modified.")
+                case 5:
+                    db.remove_task()
+                    print("Task removed.")
+                case 6:
+                    print("Bye")
+                    break            
 
-                db.print_tasks()
-                input("Task added. Press enter to continue... ")
-            elif choice == 4:
-                db.modify_task()
-
-                db.print_tasks()
-                input("Task modifed. Press enter to continue... ")
-            elif choice == 5:
-                db.remove_task()
-
-                db.print_tasks()
-                input("Task removed. Press enter to continue... ")
-            elif choice == 6:
-                print("Bye") # mysql says this when you exit it and i think its funny
-                break
+            input("Press enter to continue...")
         except ValueError as e:
             print(e)
 

@@ -1,31 +1,37 @@
 import os
-import mysql.connector
+import sqlite3
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class Database:
     def __init__(self) -> None:
-        self.connection = self._connect_to_db()
-        self.cursor = self.connection.cursor()
-        self.lookup_table = self._return_lookup_table()
+        self.conn = sqlite3.connect(os.environ['DB_NAME'])
+        self.cur = self.conn.cursor()
+        self.lookup_table = {}
 
-    def _connect_to_db(self):
-        return mysql.connector.connect(
-            user = os.environ['DB_USER'],
-            password = os.environ['DB_PASSWORD'],
-            database = os.environ['DB_NAME'],
-            host = os.environ['DB_HOST'],
+        self._update_lookup_table()
+
+    def create_table(self) -> None:
+        self.cur.execute("""
+        CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY,
+        task TEXT NOT NULL,
+        priority INTEGER NULL DEFAULT 0,
+        done INTEGER NULL DEFAULT 0,
+        deadline TEXT NULL,
+        date_finished TEXT NULL
         )
+        """)
 
     def _get_tasks(self) -> list:
-        self.cursor.execute("""
-        SELECT id, task, priority, done, deadline, date_finished
+        self.cur.execute("""
+        SELECT *
         FROM tasks
         ORDER BY priority DESC
         """)
 
-        return self.cursor.fetchall()
+        return self.cur.fetchall()
 
     def _validate_int(self, message: str) -> bool:
         try:
@@ -41,14 +47,18 @@ class Database:
         while True:
             self.print_tasks()
 
-            db_id = input(message)
+            task_id = input(message)
 
-            if self._validate_int(db_id):
-                return self.lookup_table[int(db_id)]
+            if self._validate_int(task_id):
+                if int(task_id) in self.lookup_table:
+                    return self.lookup_table[int(task_id)]
+                else: 
+                    print("ID not found in database, please try again.")
 
     def _write(self, command: str, values: tuple) -> None:
-        self.cursor.execute(command, values)
-        self.connection.commit()
+        self.cur.execute(command, values)
+        self.conn.commit()
+        self._update_lookup_table()
 
     def _get_task_details(self) -> tuple:
         task = input("Enter task: ")
@@ -62,14 +72,12 @@ class Database:
 
         return task, (1 if priority == "y" else 0), deadline
 
-    def _return_lookup_table(self) -> dict:
+    def _update_lookup_table(self):
         tasks = self._get_tasks()
-        lookup_table = {}
+        self.lookup_table.clear()
 
-        for i, (db_id, _, _, _, _, _) in enumerate(tasks, start=1):
-            lookup_table[i] = db_id
-
-        return lookup_table
+        for i, (task_id, _, _, _, _, _) in enumerate(tasks, start=1):
+            self.lookup_table[i] = task_id
 
     def print_tasks(self) -> None:
         tasks = self._get_tasks()
@@ -81,50 +89,45 @@ class Database:
                 print(f"{i}. {"[PRIORITY] " if priority else ""}{task} - Not done. {"Deadline: " if deadline else ""}{deadline if deadline else ""}")
 
     def mark_task_as_done(self) -> None:
-        db_id = self._get_id("Enter ID of task to mark as done: ")
+        task_id = self._get_id("Enter ID of task to mark as done: ")
 
         self._write("""
         UPDATE tasks
         SET done = TRUE,
-        date_finished = DATE(NOW())
-        WHERE id = %s
+        priority = desc,
+        date_finished = DATE('now')
+        WHERE id = ?
         """, 
-        (db_id,))
+        (task_id,))
 
     def add_task(self) -> None:
         task, priority, deadline = self._get_task_details()
 
         self._write("""
         INSERT INTO tasks (task, priority, deadline)
-        VALUES (%s, %s, %s)
+        VALUES (?, ?, ?)
         """,
         (task, priority, deadline))
 
-        self.lookup_table = self._return_lookup_table()
-
     def modify_task(self) -> None:
-        db_id = self._get_id("Enter number of task you wish to modify: ")
+        task_id = self._get_id("Enter number of task you wish to modify: ")
 
         task, priority, deadline = self._get_task_details()
 
         self._write("""
         UPDATE tasks
-        SET task = %s,
-        priority = %s,
-        deadline = %s
-        WHERE id = %s
+        SET task = ?,
+        priority = ?,
+        deadline = ?
+        WHERE id = ?
         """,
-        (task, priority, deadline, db_id))
-
-        self.lookup_table = self._return_lookup_table()
+        (task, priority, deadline, task_id))
 
     def remove_task(self) -> None:
-        db_id = self._get_id("Enter number of task you wish to remove: ")
+        task_id = self._get_id("Enter number of task you wish to remove: ")
 
         self._write("""
         DELETE FROM tasks
-        WHERE id = %s
+        WHERE id = ?
         """,
-        (db_id,))
-
-        self.lookup_table = self._return_lookup_table()
+        (task_id,))

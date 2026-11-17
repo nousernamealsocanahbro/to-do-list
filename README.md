@@ -1,7 +1,6 @@
 # To-do list
-A to-do list using Python and SQL
+A CLI Python to-do list using sqlite3
 
 # Usage
-1. Make an .env file and put in the name and password of your user, database, and host
-2. Run the script
-3. You can freely add, modify, or remove tasks
+1. Make an .env file in the same directory as the programs and put in the name of your database as DB_NAME, ex. 'DB_NAME = "DATABASE_NAME"' (without the 's)
+2. Run the program
